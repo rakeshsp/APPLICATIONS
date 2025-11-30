@@ -1,0 +1,32 @@
+
+now i want a make a tool to use this template daily while reporting cases where all practical tips, guides, pitfalls can be assesed by hoovering over dedicated small button/ symbol while maintaining the reporting template. importantly i should be able to update/change reporting template with chat gpt help with zero coding knowledge and avoiding repeated long code generation for small changes in reporting structure
+
+
+10. Reference Summary (Teaching & Validation)
+
+• Radiopaedia.org — MRI Knee (reporting template, sequence rationale, and pitfalls).
+• Rybak LD et al., Radiographics 2023 — "MR Imaging of the Knee: Anatomy and Pitfalls."
+• Cotten A et al., European Radiology 2024 — "Musculoskeletal MRI: Clinical and Technical Optimization."
+• Fritz J et al., Insights Imaging 2016 — "Errors and Pitfalls in Musculoskeletal MRI Reporting."
+• Magee T, Radiology Clinics of North America 2022 — "Optimizing MRI of the Knee for Clinical and Surgical Correlation."
+
+11. Implementation & Formatting for Clinical Use
+
+For PACS/RIS Integration:
+• Convert each main section (e.g., Bones, Menisci, Ligaments, etc.) into structured dropdown fields or macro sections.
+• Keep “Practical Tips” and “Pitfalls” as italicized gray-text comments for resident reference.
+• Save two versions: 
+   – **Full Teaching Version** (includes sequence rationale and pearls)
+   – **Clinical Routine Version** (concise report-only template)
+• Maintain standardized headers for automated indexing in reporting systems.
+• Ensure consistent grading systems (Outerbridge, ICRS, KL) across reports for audit and research comparability.
+
+
+open on-demand (slide-out panel from right) and export format default to be Word (.docx)
+
+Modern dark mode and small “Info” buttons that expand when clicked
+
+want this to be web-based
+
+ChatGPT-powered “Edit Template” mode so you can change structure via text prompts — no coding
+

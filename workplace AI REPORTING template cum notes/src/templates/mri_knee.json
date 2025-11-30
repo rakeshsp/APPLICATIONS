@@ -1,0 +1,144 @@
+{
+    "id": "mri_knee",
+    "title": "MRI Knee",
+    "sections": [
+        {
+            "id": "bone_marrow",
+            "title": "Bone & Marrow",
+            "description": "Assess for bone contusions, fractures, or marrow edema.",
+            "options": [
+                {
+                    "label": "Normal",
+                    "value": "Normal marrow signal. No fractures or contusions."
+                },
+                {
+                    "label": "Contusion",
+                    "value": "Bone contusion present."
+                },
+                {
+                    "label": "Fracture",
+                    "value": "Fracture identified."
+                }
+            ]
+        },
+        {
+            "id": "cartilage",
+            "title": "Articular Cartilage",
+            "description": "Evaluate medial, lateral, and patellofemoral compartments.",
+            "options": [
+                {
+                    "label": "Normal",
+                    "value": "Normal articular cartilage in all compartments."
+                },
+                {
+                    "label": "Chondromalacia Grade I",
+                    "value": "Grade I chondromalacia (softening)."
+                },
+                {
+                    "label": "Chondromalacia Grade II",
+                    "value": "Grade II chondromalacia (fissuring)."
+                },
+                {
+                    "label": "Chondromalacia Grade III",
+                    "value": "Grade III chondromalacia (partial thickness defect)."
+                },
+                {
+                    "label": "Chondromalacia Grade IV",
+                    "value": "Grade IV chondromalacia (full thickness defect)."
+                }
+            ]
+        },
+        {
+            "id": "menisci",
+            "title": "Menisci",
+            "description": "Assess medial and lateral menisci.",
+            "options": [
+                {
+                    "label": "Normal",
+                    "value": "Normal morphology and signal intensity of both menisci."
+                },
+                {
+                    "label": "MM Tear",
+                    "value": "Tear of the medial meniscus."
+                },
+                {
+                    "label": "LM Tear",
+                    "value": "Tear of the lateral meniscus."
+                },
+                {
+                    "label": "Degeneration",
+                    "value": "Intrasubstance degeneration without tear."
+                }
+            ]
+        },
+        {
+            "id": "ligaments",
+            "title": "Ligaments",
+            "description": "Evaluate ACL, PCL, MCL, and LCL.",
+            "options": [
+                {
+                    "label": "Normal",
+                    "value": "Cruciate and collateral ligaments are intact."
+                },
+                {
+                    "label": "ACL Tear",
+                    "value": "Complete tear of the ACL."
+                },
+                {
+                    "label": "ACL Sprain",
+                    "value": "Sprain of the ACL."
+                },
+                {
+                    "label": "MCL Sprain",
+                    "value": "Sprain of the MCL."
+                }
+            ]
+        },
+        {
+            "id": "effusion",
+            "title": "Effusion & Synovium",
+            "description": "Check for joint effusion and cysts.",
+            "options": [
+                {
+                    "label": "None",
+                    "value": "No significant joint effusion."
+                },
+                {
+                    "label": "Small Effusion",
+                    "value": "Small joint effusion."
+                },
+                {
+                    "label": "Moderate Effusion",
+                    "value": "Moderate joint effusion."
+                },
+                {
+                    "label": "Large Effusion",
+                    "value": "Large joint effusion."
+                },
+                {
+                    "label": "Baker's Cyst",
+                    "value": "Popliteal (Baker's) cyst present."
+                }
+            ]
+        },
+        {
+            "id": "soft_tissues",
+            "title": "Soft Tissues",
+            "description": "Evaluate surrounding soft tissues.",
+            "options": [
+                {
+                    "label": "Normal",
+                    "value": "Surrounding soft tissues are unremarkable."
+                },
+                {
+                    "label": "Edema",
+                    "value": "Soft tissue edema present."
+                },
+                {
+                    "label": "Cyst",
+                    "value": "Soft tissue cyst identified."
+                }
+            ]
+        }
+    ]
+}
