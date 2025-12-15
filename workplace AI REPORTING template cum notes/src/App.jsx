@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronRight, Copy, FileText, Check, Settings, Sparkles, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Copy, FileText, Check, Settings, Sparkles, Loader2, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import mriKneeTemplate from '@/templates/mri_knee.json';
 import * as Collapsible from '@radix-ui/react-collapsible';
+import * as Dialog from '@radix-ui/react-dialog';
 import SettingsDialog from '@/components/SettingsDialog';
 import { generateImpression } from '@/lib/ai';
 
@@ -27,19 +28,27 @@ function App() {
     const initialFindings = {};
     const initialNotes = {};
     activeTemplate.sections.forEach(section => {
-      initialFindings[section.id] = 'Not Assessed';
-      initialNotes[section.id] = '';
+      if (section.items) {
+        section.items.forEach(item => {
+          initialFindings[item.id] = 'Not Assessed';
+          initialNotes[item.id] = '';
+        });
+      } else {
+        // Legacy support for flat sections
+        initialFindings[section.id] = 'Not Assessed';
+        initialNotes[section.id] = '';
+      }
     });
     setFindings(initialFindings);
     setNotes(initialNotes);
   }, [activeTemplate]);
 
-  const handleFindingChange = (sectionId, value) => {
-    setFindings(prev => ({ ...prev, [sectionId]: value }));
+  const handleFindingChange = (id, value) => {
+    setFindings(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleNoteChange = (sectionId, value) => {
-    setNotes(prev => ({ ...prev, [sectionId]: value }));
+  const handleNoteChange = (id, value) => {
+    setNotes(prev => ({ ...prev, [id]: value }));
   };
 
   const buildReportText = () => {
@@ -56,16 +65,49 @@ function App() {
     // Findings
     reportText += `FINDINGS:\n`;
     activeTemplate.sections.forEach(section => {
-      const finding = findings[section.id];
-      const note = notes[section.id];
+      let sectionHasFindings = false;
+      let sectionText = `${section.title}:\n`;
+      let currentGroup = null;
 
-      if (finding && finding !== 'Not Assessed') {
-        const option = section.options.find(opt => opt.label === finding);
-        const text = option ? option.value : finding;
+      if (section.items) {
+        section.items.forEach(item => {
+          const finding = findings[item.id];
+          const note = notes[item.id];
 
-        reportText += `${section.title}: ${text}`;
-        if (note) reportText += ` ${note}`;
-        reportText += `\n`;
+          if (finding && finding !== 'Not Assessed') {
+            // Add group header if needed
+            if (item.group && item.group !== currentGroup) {
+              sectionText += `  ${item.group}:\n`;
+              currentGroup = item.group;
+            }
+
+            const option = item.options.find(opt => opt.label === finding);
+            const text = option ? option.value : finding;
+
+            // Indent if in a group
+            const prefix = item.group ? `    - ` : `- `;
+            sectionText += `${prefix}${item.title}: ${text}`;
+            if (note) sectionText += ` ${note}`;
+            sectionText += `\n`;
+            sectionHasFindings = true;
+          }
+        });
+      } else {
+        // Legacy support
+        const finding = findings[section.id];
+        const note = notes[section.id];
+        if (finding && finding !== 'Not Assessed') {
+          const option = section.options.find(opt => opt.label === finding);
+          const text = option ? option.value : finding;
+          sectionText += `${text}`;
+          if (note) sectionText += ` ${note}`;
+          sectionText += `\n`;
+          sectionHasFindings = true;
+        }
+      }
+
+      if (sectionHasFindings) {
+        reportText += sectionText + '\n';
       }
     });
 
@@ -82,9 +124,19 @@ function App() {
     } else {
       const abnormalities = [];
       activeTemplate.sections.forEach(section => {
-        const finding = findings[section.id];
-        if (finding && finding !== 'Not Assessed' && finding !== 'Normal' && finding !== 'None') {
-          abnormalities.push(finding);
+        if (section.items) {
+          section.items.forEach(item => {
+            const finding = findings[item.id];
+            if (finding && finding !== 'Not Assessed' && finding !== 'Normal' && finding !== 'None' && finding !== 'Intact' && finding !== 'Absent') {
+              const option = item.options.find(opt => opt.label === finding);
+              abnormalities.push(option ? option.value : finding);
+            }
+          });
+        } else {
+          const finding = findings[section.id];
+          if (finding && finding !== 'Not Assessed' && finding !== 'Normal' && finding !== 'None') {
+            abnormalities.push(finding);
+          }
         }
       });
 
@@ -200,8 +252,8 @@ function App() {
               <Section
                 key={section.id}
                 section={section}
-                finding={findings[section.id]}
-                note={notes[section.id]}
+                findings={findings}
+                notes={notes}
                 onFindingChange={handleFindingChange}
                 onNoteChange={handleNoteChange}
               />
@@ -268,68 +320,154 @@ function App() {
   );
 }
 
-function Section({ section, finding, note, onFindingChange, onNoteChange }) {
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+
+function Section({ section, findings, notes, onFindingChange, onNoteChange }) {
   const [isOpen, setIsOpen] = useState(false);
-  const isAbnormal = finding && finding !== 'Normal' && finding !== 'None' && finding !== 'Not Assessed';
+  const [showInfo, setShowInfo] = useState(false);
+
+  // Check if any item in this section is abnormal
+  const hasAbnormality = section.items ? section.items.some(item => {
+    const val = findings[item.id];
+    return val && val !== 'Normal' && val !== 'None' && val !== 'Intact' && val !== 'Absent' && val !== 'Not Assessed';
+  }) : false;
+
+  // Group items by their 'group' property
+  const groupedItems = section.items ? section.items.reduce((acc, item) => {
+    const groupName = item.group || 'General';
+    if (!acc[groupName]) acc[groupName] = [];
+    acc[groupName].push(item);
+    return acc;
+  }, {}) : {};
 
   return (
     <Collapsible.Root open={isOpen} onOpenChange={setIsOpen} className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden transition-all duration-200">
-      <Collapsible.Trigger className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors text-left">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors">
+        <Collapsible.Trigger className="flex items-center gap-3 flex-1 text-left">
           <div className={cn(
             "w-2 h-2 rounded-full",
-            isAbnormal ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" :
-              finding === 'Normal' || finding === 'None' ? "bg-green-500" : "bg-slate-600"
+            hasAbnormality ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" : "bg-slate-600"
           )} />
           <span className="font-medium text-slate-200">{section.title}</span>
-          {finding && finding !== 'Not Assessed' && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-              {finding}
-            </span>
-          )}
-        </div>
-        <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform duration-200", isOpen && "rotate-180")} />
-      </Collapsible.Trigger>
+        </Collapsible.Trigger>
 
-      <Collapsible.Content className="border-t border-slate-800/50 bg-slate-950/30 p-4 space-y-4 animate-slideDown">
-        <p className="text-xs text-slate-500">{section.description}</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {section.options.map((opt) => (
-            <button
-              key={opt.label}
-              onClick={() => onFindingChange(section.id, opt.label)}
-              className={cn(
-                "px-3 py-2 rounded-md text-sm text-left transition-all border",
-                finding === opt.label
-                  ? "bg-blue-600/10 border-blue-500/50 text-blue-400"
-                  : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-300"
+        <div className="flex items-center gap-3">
+          {section.knowledgePoint && (
+            <div className="relative group">
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowInfo(!showInfo); }}
+                className="p-1 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-full transition-colors"
+              >
+                <Info className="w-4 h-4" />
+              </button>
+              {showInfo && (
+                <div className="absolute right-0 top-8 z-50 w-64 bg-slate-800 border border-slate-700 p-3 rounded-lg shadow-xl text-xs text-slate-300 leading-relaxed">
+                  {section.knowledgePoint}
+                </div>
               )}
-            >
-              {opt.label}
-            </button>
-          ))}
-          <button
-            onClick={() => onFindingChange(section.id, 'Not Assessed')}
-            className={cn(
-              "px-3 py-2 rounded-md text-sm text-left transition-all border border-dashed",
-              finding === 'Not Assessed'
-                ? "bg-slate-800 border-slate-600 text-slate-400"
-                : "border-slate-800 text-slate-500 hover:text-slate-400"
-            )}
-          >
-            Not Assessed
-          </button>
+            </div>
+          )}
+          <Collapsible.Trigger>
+            <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform duration-200", isOpen && "rotate-180")} />
+          </Collapsible.Trigger>
         </div>
+      </div>
 
-        <input
-          placeholder="Additional notes..."
-          className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-          value={note || ''}
-          onChange={(e) => onNoteChange(section.id, e.target.value)}
-        />
+      <Collapsible.Content className="border-t border-slate-800/50 bg-slate-950/30 p-4 space-y-6 animate-slideDown">
+        {section.helperText && (
+          <div className="bg-blue-900/20 border border-blue-900/50 p-3 rounded-md text-xs text-blue-200 mb-4">
+            {section.helperText}
+          </div>
+        )}
+
+        {Object.entries(groupedItems).map(([groupName, items]) => (
+          <Group
+            key={groupName}
+            title={groupName}
+            items={items}
+            findings={findings}
+            notes={notes}
+            onFindingChange={onFindingChange}
+            onNoteChange={onNoteChange}
+          />
+        ))}
       </Collapsible.Content>
     </Collapsible.Root>
+  );
+}
+
+function Group({ title, items, findings, notes, onFindingChange, onNoteChange }) {
+  const [isOpen, setIsOpen] = useState(true); // Default open, or false if preferred
+  const isGeneral = title === 'General';
+
+  return (
+    <div className="space-y-2">
+      {!isGeneral && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex items-center justify-between text-sm font-bold text-blue-400 mt-4 mb-2 border-b border-blue-900/30 pb-1 hover:text-blue-300 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+            {title}
+          </div>
+          <ChevronDown className={cn("w-3 h-3 transition-transform", isOpen && "rotate-180")} />
+        </button>
+      )}
+
+      {(isOpen || isGeneral) && (
+        <div className="space-y-3 pl-2">
+          {items.map(item => (
+            <div key={item.id} className="grid grid-cols-1 md:grid-cols-[1fr,1.5fr,1.5fr] gap-3 items-start border-b border-slate-800/50 pb-3 last:border-0">
+              <label className="text-xs font-medium text-slate-400 pt-2">{item.title}</label>
+
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger className={cn(
+                  "flex items-center justify-between w-full px-3 py-2 rounded-md text-sm border transition-all outline-none",
+                  findings[item.id] && findings[item.id] !== 'Not Assessed'
+                    ? "bg-blue-600/10 border-blue-500/50 text-blue-400"
+                    : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700"
+                )}>
+                  <span className="truncate">{findings[item.id] || 'Select...'}</span>
+                  <ChevronDown className="w-3 h-3 opacity-50" />
+                </DropdownMenu.Trigger>
+
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content className="z-50 min-w-[200px] bg-slate-900 border border-slate-800 rounded-md shadow-xl p-1 animate-in fade-in zoom-in-95 duration-100">
+                    {item.options.map((opt) => (
+                      <DropdownMenu.Item
+                        key={opt.label}
+                        className={cn(
+                          "px-2 py-1.5 text-sm rounded-sm cursor-pointer outline-none transition-colors",
+                          findings[item.id] === opt.label ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                        )}
+                        onClick={() => onFindingChange(item.id, opt.label)}
+                      >
+                        {opt.label}
+                      </DropdownMenu.Item>
+                    ))}
+                    <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
+                    <DropdownMenu.Item
+                      className="px-2 py-1.5 text-sm rounded-sm cursor-pointer outline-none text-slate-500 hover:bg-slate-800 hover:text-slate-400"
+                      onClick={() => onFindingChange(item.id, 'Not Assessed')}
+                    >
+                      Not Assessed
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
+
+              <input
+                placeholder="Notes..."
+                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none text-slate-400"
+                value={notes[item.id] || ''}
+                onChange={(e) => onNoteChange(item.id, e.target.value)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

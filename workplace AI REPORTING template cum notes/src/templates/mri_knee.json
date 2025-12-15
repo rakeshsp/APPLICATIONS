@@ -5,138 +5,1031 @@
         {
             "id": "bone_marrow",
             "title": "Bone & Marrow",
-            "description": "Assess for bone contusions, fractures, or marrow edema.",
-            "options": [
+            "knowledgePoint": "Best on T1 and PD/T2 FS. Look for marrow edema (bright on FS), fracture lines (dark on T1), subchondral cysts.",
+            "helperText": "Practical Point: Correlate subtle bone marrow edema patterns with mechanism of injury to identify occult fractures or bone bruises.",
+            "items": [
                 {
-                    "label": "Normal",
-                    "value": "Normal marrow signal. No fractures or contusions."
+                    "id": "bone_alignment",
+                    "title": "Alignment",
+                    "group": "General",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal alignment."
+                        },
+                        {
+                            "label": "Varus",
+                            "value": "Varus alignment."
+                        },
+                        {
+                            "label": "Valgus",
+                            "value": "Valgus alignment."
+                        },
+                        {
+                            "label": "Rotational",
+                            "value": "Rotational malalignment."
+                        }
+                    ]
                 },
                 {
-                    "label": "Contusion",
-                    "value": "Bone contusion present."
+                    "id": "femur_medial_condyle",
+                    "title": "Medial Femoral Condyle",
+                    "group": "A. Distal Femur",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the medial femoral condyle."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the medial femoral condyle."
+                        },
+                        {
+                            "label": "Subchondral Cyst",
+                            "value": "Subchondral cyst in the medial femoral condyle."
+                        },
+                        {
+                            "label": "Sclerosis",
+                            "value": "Subchondral sclerosis of the medial femoral condyle."
+                        },
+                        {
+                            "label": "Infarct",
+                            "value": "Bone infarct in the medial femoral condyle."
+                        },
+                        {
+                            "label": "Osteonecrosis",
+                            "value": "Osteonecrosis of the medial femoral condyle."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the medial femoral condyle."
+                        }
+                    ]
                 },
                 {
-                    "label": "Fracture",
-                    "value": "Fracture identified."
+                    "id": "femur_lateral_condyle",
+                    "title": "Lateral Femoral Condyle",
+                    "group": "A. Distal Femur",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the lateral femoral condyle."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the lateral femoral condyle."
+                        },
+                        {
+                            "label": "Subchondral Cyst",
+                            "value": "Subchondral cyst in the lateral femoral condyle."
+                        },
+                        {
+                            "label": "Sclerosis",
+                            "value": "Subchondral sclerosis of the lateral femoral condyle."
+                        },
+                        {
+                            "label": "Infarct",
+                            "value": "Bone infarct in the lateral femoral condyle."
+                        },
+                        {
+                            "label": "Osteonecrosis",
+                            "value": "Osteonecrosis of the lateral femoral condyle."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the lateral femoral condyle."
+                        }
+                    ]
+                },
+                {
+                    "id": "femur_trochlea",
+                    "title": "Trochlea",
+                    "group": "A. Distal Femur",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the trochlea."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the trochlea."
+                        },
+                        {
+                            "label": "Subchondral Cyst",
+                            "value": "Subchondral cyst in the trochlea."
+                        },
+                        {
+                            "label": "Sclerosis",
+                            "value": "Subchondral sclerosis of the trochlea."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the trochlea."
+                        }
+                    ]
+                },
+                {
+                    "id": "femur_intercondylar",
+                    "title": "Intercondylar Region",
+                    "group": "A. Distal Femur",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema in the intercondylar region."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture involving the intercondylar region."
+                        }
+                    ]
+                },
+                {
+                    "id": "tibia_lateral_plateau",
+                    "title": "Lateral Tibial Plateau",
+                    "group": "B. Proximal Tibia",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the lateral tibial plateau."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the lateral tibial plateau."
+                        },
+                        {
+                            "label": "Subchondral Cyst",
+                            "value": "Subchondral cyst in the lateral tibial plateau."
+                        },
+                        {
+                            "label": "Sclerosis",
+                            "value": "Subchondral sclerosis of the lateral tibial plateau."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the lateral tibial plateau."
+                        }
+                    ]
+                },
+                {
+                    "id": "tibia_medial_plateau",
+                    "title": "Medial Tibial Plateau",
+                    "group": "B. Proximal Tibia",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the medial tibial plateau."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the medial tibial plateau."
+                        },
+                        {
+                            "label": "Subchondral Cyst",
+                            "value": "Subchondral cyst in the medial tibial plateau."
+                        },
+                        {
+                            "label": "Sclerosis",
+                            "value": "Subchondral sclerosis of the medial tibial plateau."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the medial tibial plateau."
+                        }
+                    ]
+                },
+                {
+                    "id": "tibia_eminence",
+                    "title": "Intercondylar Eminence / Spines",
+                    "group": "B. Proximal Tibia",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the tibial spines."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the tibial spines."
+                        },
+                        {
+                            "label": "Avulsion",
+                            "value": "Avulsion fracture of the tibial spine."
+                        }
+                    ]
+                },
+                {
+                    "id": "tibia_posterolateral",
+                    "title": "Posterolateral Rim",
+                    "group": "B. Proximal Tibia",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the posterolateral tibial rim."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the posterolateral tibial rim."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the posterolateral tibial rim (Segond)."
+                        }
+                    ]
+                },
+                {
+                    "id": "tibia_tuberosity",
+                    "title": "Tibial Tuberosity",
+                    "group": "B. Proximal Tibia",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the tibial tuberosity."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the tibial tuberosity."
+                        },
+                        {
+                            "label": "Osgood-Schlatter",
+                            "value": "Changes consistent with Osgood-Schlatter disease."
+                        }
+                    ]
+                },
+                {
+                    "id": "tibia_metaphysis",
+                    "title": "Proximal Metaphysis",
+                    "group": "B. Proximal Tibia",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema in the proximal tibial metaphysis."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the proximal tibial metaphysis."
+                        }
+                    ]
+                },
+                {
+                    "id": "fibula_head",
+                    "title": "Fibular Head",
+                    "group": "C. Fibula",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the fibular head."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the fibular head."
+                        },
+                        {
+                            "label": "Avulsion",
+                            "value": "Avulsion fracture of the fibular head (Arcuate sign)."
+                        }
+                    ]
+                },
+                {
+                    "id": "fibula_arcuate",
+                    "title": "Arcuate Area",
+                    "group": "C. Fibula",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema in the arcuate area."
+                        }
+                    ]
+                },
+                {
+                    "id": "fibula_shaft",
+                    "title": "Proximal Fibular Shaft",
+                    "group": "C. Fibula",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema in the proximal fibular shaft."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the proximal fibular shaft."
+                        }
+                    ]
+                },
+                {
+                    "id": "patella_superior",
+                    "title": "Superior Pole",
+                    "group": "D. Patella",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the superior pole of the patella."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the superior pole of the patella."
+                        },
+                        {
+                            "label": "Sinding-Larsen-Johansson",
+                            "value": "Changes consistent with Sinding-Larsen-Johansson disease."
+                        }
+                    ]
+                },
+                {
+                    "id": "patella_mid",
+                    "title": "Mid-pole",
+                    "group": "D. Patella",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the mid-pole of the patella."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the mid-pole of the patella."
+                        }
+                    ]
+                },
+                {
+                    "id": "patella_inferior",
+                    "title": "Inferior Pole",
+                    "group": "D. Patella",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the inferior pole of the patella."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture of the inferior pole of the patella."
+                        }
+                    ]
+                },
+                {
+                    "id": "patella_medial_facet",
+                    "title": "Medial Facet",
+                    "group": "D. Patella",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the medial facet of the patella."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the medial facet."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture involving the medial facet."
+                        }
+                    ]
+                },
+                {
+                    "id": "patella_lateral_facet",
+                    "title": "Lateral Facet",
+                    "group": "D. Patella",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal marrow signal."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Marrow edema involving the lateral facet of the patella."
+                        },
+                        {
+                            "label": "Contusion",
+                            "value": "Bone contusion of the lateral facet (Kissing contusion)."
+                        },
+                        {
+                            "label": "Fracture",
+                            "value": "Fracture involving the lateral facet."
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": "cartilage",
             "title": "Articular Cartilage",
-            "description": "Evaluate medial, lateral, and patellofemoral compartments.",
-            "options": [
+            "helperText": "Grading (Outerbridge / ICRS): I – signal change without surface defect, II – <50% depth loss, III – >50% depth, IV – full-thickness to bone.",
+            "items": [
                 {
-                    "label": "Normal",
-                    "value": "Normal articular cartilage in all compartments."
+                    "id": "cartilage_medial",
+                    "title": "Medial Compartment",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal cartilage in medial compartment."
+                        },
+                        {
+                            "label": "Signal Alteration",
+                            "value": "Signal alteration (Grade I)."
+                        },
+                        {
+                            "label": "Thinning",
+                            "value": "Cartilage thinning."
+                        },
+                        {
+                            "label": "Focal Defect",
+                            "value": "Focal cartilage defect."
+                        },
+                        {
+                            "label": "Delamination",
+                            "value": "Cartilage delamination."
+                        },
+                        {
+                            "label": "Full-thickness",
+                            "value": "Full-thickness cartilage loss (Grade IV)."
+                        }
+                    ]
                 },
                 {
-                    "label": "Chondromalacia Grade I",
-                    "value": "Grade I chondromalacia (softening)."
+                    "id": "cartilage_lateral",
+                    "title": "Lateral Compartment",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal cartilage in lateral compartment."
+                        },
+                        {
+                            "label": "Signal Alteration",
+                            "value": "Signal alteration (Grade I)."
+                        },
+                        {
+                            "label": "Thinning",
+                            "value": "Cartilage thinning."
+                        },
+                        {
+                            "label": "Focal Defect",
+                            "value": "Focal cartilage defect."
+                        },
+                        {
+                            "label": "Delamination",
+                            "value": "Cartilage delamination."
+                        },
+                        {
+                            "label": "Full-thickness",
+                            "value": "Full-thickness cartilage loss (Grade IV)."
+                        }
+                    ]
                 },
                 {
-                    "label": "Chondromalacia Grade II",
-                    "value": "Grade II chondromalacia (fissuring)."
+                    "id": "cartilage_pf",
+                    "title": "Patellofemoral",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal cartilage in patellofemoral compartment."
+                        },
+                        {
+                            "label": "Signal Alteration",
+                            "value": "Signal alteration (Grade I)."
+                        },
+                        {
+                            "label": "Thinning",
+                            "value": "Cartilage thinning."
+                        },
+                        {
+                            "label": "Focal Defect",
+                            "value": "Focal cartilage defect."
+                        },
+                        {
+                            "label": "Delamination",
+                            "value": "Cartilage delamination."
+                        },
+                        {
+                            "label": "Full-thickness",
+                            "value": "Full-thickness cartilage loss (Grade IV)."
+                        }
+                    ]
                 },
                 {
-                    "label": "Chondromalacia Grade III",
-                    "value": "Grade III chondromalacia (partial thickness defect)."
-                },
-                {
-                    "label": "Chondromalacia Grade IV",
-                    "value": "Grade IV chondromalacia (full thickness defect)."
+                    "id": "cartilage_marrow",
+                    "title": "Subchondral Marrow",
+                    "options": [
+                        {
+                            "label": "Absent",
+                            "value": "No subchondral marrow edema or cysts."
+                        },
+                        {
+                            "label": "Present",
+                            "value": "Subchondral marrow edema/cysts present."
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": "menisci",
             "title": "Menisci",
-            "description": "Assess medial and lateral menisci.",
-            "options": [
+            "helperText": "Practical Tip: Only linear signal reaching articular surface = tear. Intrameniscal signal = degeneration.",
+            "items": [
                 {
-                    "label": "Normal",
-                    "value": "Normal morphology and signal intensity of both menisci."
+                    "id": "meniscus_medial_morph",
+                    "title": "Medial Meniscus Morphology",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal morphology."
+                        },
+                        {
+                            "label": "Degenerative",
+                            "value": "Degenerative signal changes."
+                        },
+                        {
+                            "label": "Tear",
+                            "value": "Meniscal tear."
+                        }
+                    ]
                 },
                 {
-                    "label": "MM Tear",
-                    "value": "Tear of the medial meniscus."
+                    "id": "meniscus_medial_tear",
+                    "title": "MM Tear Type",
+                    "options": [
+                        {
+                            "label": "N/A",
+                            "value": ""
+                        },
+                        {
+                            "label": "Horizontal",
+                            "value": "Horizontal tear."
+                        },
+                        {
+                            "label": "Radial",
+                            "value": "Radial tear."
+                        },
+                        {
+                            "label": "Complex",
+                            "value": "Complex tear."
+                        },
+                        {
+                            "label": "Bucket-handle",
+                            "value": "Bucket-handle tear."
+                        }
+                    ]
                 },
                 {
-                    "label": "LM Tear",
-                    "value": "Tear of the lateral meniscus."
+                    "id": "meniscus_medial_root",
+                    "title": "MM Root",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "Root intact."
+                        },
+                        {
+                            "label": "Partial Tear",
+                            "value": "Partial root tear."
+                        },
+                        {
+                            "label": "Avulsion",
+                            "value": "Root avulsion."
+                        }
+                    ]
                 },
                 {
-                    "label": "Degeneration",
-                    "value": "Intrasubstance degeneration without tear."
+                    "id": "meniscus_medial_extrusion",
+                    "title": "MM Extrusion",
+                    "options": [
+                        {
+                            "label": "None",
+                            "value": "No extrusion."
+                        },
+                        {
+                            "label": "Present",
+                            "value": "Meniscal extrusion present."
+                        }
+                    ]
+                },
+                {
+                    "id": "meniscus_lateral_morph",
+                    "title": "Lateral Meniscus Morphology",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal morphology."
+                        },
+                        {
+                            "label": "Degenerative",
+                            "value": "Degenerative signal changes."
+                        },
+                        {
+                            "label": "Tear",
+                            "value": "Meniscal tear."
+                        }
+                    ]
+                },
+                {
+                    "id": "meniscus_lateral_tear",
+                    "title": "LM Tear Type",
+                    "options": [
+                        {
+                            "label": "N/A",
+                            "value": ""
+                        },
+                        {
+                            "label": "Horizontal",
+                            "value": "Horizontal tear."
+                        },
+                        {
+                            "label": "Radial",
+                            "value": "Radial tear."
+                        },
+                        {
+                            "label": "Complex",
+                            "value": "Complex tear."
+                        },
+                        {
+                            "label": "Bucket-handle",
+                            "value": "Bucket-handle tear."
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": "ligaments",
             "title": "Ligaments",
-            "description": "Evaluate ACL, PCL, MCL, and LCL.",
-            "options": [
+            "items": [
                 {
-                    "label": "Normal",
-                    "value": "Cruciate and collateral ligaments are intact."
+                    "id": "lig_acl",
+                    "title": "ACL",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "ACL intact."
+                        },
+                        {
+                            "label": "Partial Tear",
+                            "value": "Partial ACL tear."
+                        },
+                        {
+                            "label": "Complete Tear",
+                            "value": "Complete ACL tear."
+                        }
+                    ]
                 },
                 {
-                    "label": "ACL Tear",
-                    "value": "Complete tear of the ACL."
+                    "id": "lig_pcl",
+                    "title": "PCL",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "PCL intact."
+                        },
+                        {
+                            "label": "Partial Tear",
+                            "value": "Partial PCL tear."
+                        },
+                        {
+                            "label": "Complete Tear",
+                            "value": "Complete PCL tear."
+                        }
+                    ]
                 },
                 {
-                    "label": "ACL Sprain",
-                    "value": "Sprain of the ACL."
+                    "id": "lig_mcl",
+                    "title": "MCL",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "MCL intact."
+                        },
+                        {
+                            "label": "Grade I",
+                            "value": "Grade I MCL sprain."
+                        },
+                        {
+                            "label": "Grade II",
+                            "value": "Grade II MCL sprain."
+                        },
+                        {
+                            "label": "Grade III",
+                            "value": "Grade III MCL sprain."
+                        }
+                    ]
                 },
                 {
-                    "label": "MCL Sprain",
-                    "value": "Sprain of the MCL."
+                    "id": "lig_lcl",
+                    "title": "LCL Complex",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "LCL complex intact."
+                        },
+                        {
+                            "label": "Abnormal",
+                            "value": "Abnormality of the LCL complex."
+                        }
+                    ]
+                },
+                {
+                    "id": "lig_plc",
+                    "title": "Posterolateral Corner",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "Posterolateral corner structures intact."
+                        },
+                        {
+                            "label": "Abnormal",
+                            "value": "Abnormality of the posterolateral corner."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "extensor",
+            "title": "Extensor Mechanism",
+            "items": [
+                {
+                    "id": "ext_tendons",
+                    "title": "Quad & Patellar Tendons",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "Quadriceps and patellar tendons intact."
+                        },
+                        {
+                            "label": "Tendinosis",
+                            "value": "Tendinosis noted."
+                        },
+                        {
+                            "label": "Partial Tear",
+                            "value": "Partial tear."
+                        },
+                        {
+                            "label": "Full Tear",
+                            "value": "Full thickness tear."
+                        }
+                    ]
+                },
+                {
+                    "id": "ext_retinacula",
+                    "title": "Retinacula",
+                    "options": [
+                        {
+                            "label": "Intact",
+                            "value": "Retinacula intact."
+                        },
+                        {
+                            "label": "Disrupted",
+                            "value": "Retinacular disruption."
+                        }
+                    ]
+                },
+                {
+                    "id": "ext_patella",
+                    "title": "Patella Position",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal patellar position."
+                        },
+                        {
+                            "label": "Alta",
+                            "value": "Patella alta."
+                        },
+                        {
+                            "label": "Baja",
+                            "value": "Patella baja."
+                        },
+                        {
+                            "label": "Tilt",
+                            "value": "Patellar tilt."
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": "effusion",
-            "title": "Effusion & Synovium",
-            "description": "Check for joint effusion and cysts.",
-            "options": [
+            "title": "Joint Effusion & Synovium",
+            "items": [
                 {
-                    "label": "None",
-                    "value": "No significant joint effusion."
+                    "id": "effusion_vol",
+                    "title": "Effusion",
+                    "options": [
+                        {
+                            "label": "None",
+                            "value": "No significant effusion."
+                        },
+                        {
+                            "label": "Mild",
+                            "value": "Mild joint effusion."
+                        },
+                        {
+                            "label": "Moderate",
+                            "value": "Moderate joint effusion."
+                        },
+                        {
+                            "label": "Large",
+                            "value": "Large joint effusion."
+                        }
+                    ]
                 },
                 {
-                    "label": "Small Effusion",
-                    "value": "Small joint effusion."
+                    "id": "synovium",
+                    "title": "Synovium",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal synovium."
+                        },
+                        {
+                            "label": "Thickened",
+                            "value": "Synovial thickening."
+                        },
+                        {
+                            "label": "Enhancing",
+                            "value": "Synovial enhancement."
+                        }
+                    ]
                 },
                 {
-                    "label": "Moderate Effusion",
-                    "value": "Moderate joint effusion."
+                    "id": "bakers",
+                    "title": "Baker's Cyst",
+                    "options": [
+                        {
+                            "label": "Absent",
+                            "value": "No Baker's cyst."
+                        },
+                        {
+                            "label": "Present",
+                            "value": "Baker's cyst present."
+                        },
+                        {
+                            "label": "Ruptured",
+                            "value": "Ruptured Baker's cyst."
+                        }
+                    ]
                 },
                 {
-                    "label": "Large Effusion",
-                    "value": "Large joint effusion."
-                },
-                {
-                    "label": "Baker's Cyst",
-                    "value": "Popliteal (Baker's) cyst present."
+                    "id": "loose_bodies",
+                    "title": "Loose Bodies",
+                    "options": [
+                        {
+                            "label": "Absent",
+                            "value": "No loose bodies."
+                        },
+                        {
+                            "label": "Present",
+                            "value": "Intra-articular loose bodies identified."
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": "soft_tissues",
             "title": "Soft Tissues",
-            "description": "Evaluate surrounding soft tissues.",
-            "options": [
+            "items": [
                 {
-                    "label": "Normal",
-                    "value": "Surrounding soft tissues are unremarkable."
+                    "id": "hoffa",
+                    "title": "Hoffa's Fat Pad",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal Hoffa's fat pad."
+                        },
+                        {
+                            "label": "Edema",
+                            "value": "Edema in Hoffa's fat pad."
+                        },
+                        {
+                            "label": "Fibrosis",
+                            "value": "Fibrosis in Hoffa's fat pad."
+                        }
+                    ]
                 },
                 {
-                    "label": "Edema",
-                    "value": "Soft tissue edema present."
+                    "id": "bursae",
+                    "title": "Bursae",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "No bursitis."
+                        },
+                        {
+                            "label": "Prepatellar",
+                            "value": "Prepatellar bursitis."
+                        },
+                        {
+                            "label": "Infrapatellar",
+                            "value": "Infrapatellar bursitis."
+                        },
+                        {
+                            "label": "Pes Anserine",
+                            "value": "Pes anserine bursitis."
+                        }
+                    ]
                 },
                 {
-                    "label": "Cyst",
-                    "value": "Soft tissue cyst identified."
+                    "id": "cysts",
+                    "title": "Cysts",
+                    "options": [
+                        {
+                            "label": "None",
+                            "value": "No soft tissue cysts."
+                        },
+                        {
+                            "label": "Ganglion",
+                            "value": "Ganglion cyst."
+                        },
+                        {
+                            "label": "Parameniscal",
+                            "value": "Parameniscal cyst."
+                        }
+                    ]
+                },
+                {
+                    "id": "muscles",
+                    "title": "Muscles",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "Normal muscle bulk and signal."
+                        },
+                        {
+                            "label": "Strain",
+                            "value": "Muscle strain."
+                        },
+                        {
+                            "label": "Tear",
+                            "value": "Muscle tear."
+                        },
+                        {
+                            "label": "Atrophy",
+                            "value": "Muscle atrophy."
+                        }
+                    ]
                 }
             ]
         }
