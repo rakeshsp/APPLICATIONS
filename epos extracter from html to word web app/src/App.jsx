@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Document, Packer, Paragraph, TextRun, ImageRun, PageOrientation } from 'docx'
+import { Document, Packer, Paragraph, TextRun, ImageRun } from 'docx'
 import { saveAs } from 'file-saver'
 import './App.css'
 
@@ -25,146 +25,17 @@ function App() {
     }
   }
 
-  const processImageToPNG = (blob) => {
+  const getImageDimensions = (blob) => {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.onload = () => {
-        const canvas = document.createElement('canvas')
-        canvas.width = img.width
-        canvas.height = img.height
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0)
-
-        canvas.toBlob((pngBlob) => {
-          if (pngBlob) {
-            resolve({
-              blob: pngBlob,
-              width: img.width,
-              height: img.height
-            })
-          } else {
-            reject(new Error('Canvas conversion failed'))
-          }
-        }, 'image/png')
-
+        resolve({ width: img.width, height: img.height })
         URL.revokeObjectURL(img.src)
       }
-      img.onerror = (e) => {
-        URL.revokeObjectURL(img.src)
-        reject(e)
-      }
+      img.onerror = reject
       img.src = URL.createObjectURL(blob)
     })
   }
-
-  // Recursive function to process nodes and capture formatting
-  const processNode = async (node, style = {}) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, ''); // Sanitize
-      if (text) {
-        return [new TextRun({
-          text: text,
-          bold: style.bold,
-          italics: style.italics,
-          underline: style.underline ? {} : undefined,
-          size: style.size || 24,
-        })];
-      }
-      return [];
-    }
-
-    if (node.nodeType !== Node.ELEMENT_NODE) return [];
-
-    const tagName = node.tagName.toUpperCase();
-    const newStyle = { ...style };
-
-    // Apply styles based on tags
-    if (['B', 'STRONG'].includes(tagName)) newStyle.bold = true;
-    if (['I', 'EM'].includes(tagName)) newStyle.italics = true;
-    if (['U'].includes(tagName)) newStyle.underline = true;
-    if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(tagName)) {
-      newStyle.bold = true;
-      newStyle.size = 28; // Larger size for headings
-    }
-    if (tagName === 'FIGCAPTION') {
-      newStyle.italics = true;
-      newStyle.size = 20; // Smaller font for captions
-    }
-
-
-    // Handle Line Breaks
-    if (tagName === 'BR') {
-      return [new TextRun({ break: 1 })];
-    }
-
-    // Handle Images
-    if (tagName === 'IMG') {
-      let src = node.getAttribute('src');
-      if (src) {
-        if (src.startsWith('/')) {
-          const urlObj = new URL(url)
-          src = `${urlObj.origin}${src}`
-        } else if (!src.startsWith('http')) {
-          const urlObj = new URL(url)
-          src = new URL(src, urlObj.href).href
-        }
-
-        if (src.includes('epos.myesr.org') && src.includes('/media/')) {
-          try {
-            const urlObj = new URL(src);
-            urlObj.search = '';
-            src = urlObj.toString();
-          } catch (e) { /* ignore */ }
-        }
-
-        const imgBlob = await fetchImage(src);
-        if (imgBlob) {
-          try {
-            const { blob: pngBlob, width, height } = await processImageToPNG(imgBlob);
-            const arrayBuffer = await pngBlob.arrayBuffer();
-
-            // A4 width in twips is 11906. Margins are 1000 on each side.
-            const MAX_CONTENT_WIDTH_PX = (11906 - 2000) / 15;
-            let finalWidth = width;
-            let finalHeight = height;
-
-            if (width > MAX_CONTENT_WIDTH_PX) {
-              const scaleFactor = MAX_CONTENT_WIDTH_PX / width;
-              finalWidth = MAX_CONTENT_WIDTH_PX;
-              finalHeight = height * scaleFactor;
-            }
-
-            finalWidth = Math.floor(finalWidth);
-            finalHeight = Math.floor(finalHeight);
-
-            return [new ImageRun({
-              data: arrayBuffer,
-              transformation: {
-                width: finalWidth,
-                height: finalHeight,
-              },
-            })];
-          } catch (e) {
-            console.error("Error processing image", e);
-          }
-        }
-        return [];
-      }
-    }
-
-    // Process children recursively
-    const runs = [];
-    for (const child of node.childNodes) {
-      const childRuns = await processNode(child, newStyle);
-      runs.push(...childRuns);
-    }
-
-    if (tagName === 'FIGCAPTION' && runs.length > 0) {
-      runs.unshift(new TextRun({ break: 1 }));
-    }
-
-    return runs;
-  };
 
   const handleConvert = async () => {
     if (!url) {
@@ -181,67 +52,161 @@ function App() {
       const parser = new DOMParser()
       const doc = parser.parseFromString(html, 'text/html')
 
-      const children = []
+      const docChildren = []
+      let currentTextRuns = []
       let maxImageWidth = 0
 
-      // Expanded selector to include figcaption and figure
-      const elements = doc.body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, img, figcaption, figure')
-
-      setStatus(`Found ${elements.length} elements. Processing...`)
-
-      for (const el of elements) {
-        // Check if parent is one of the block tags we handle.
-        const blockTags = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'FIGURE', 'FIGCAPTION'];
-        if (blockTags.includes(el.parentElement.tagName)) {
-          if (el.tagName === 'IMG') continue;
-        }
-
-
-
-        const paragraphChildren = await processNode(el);
-
-        if (paragraphChildren.length > 0) {
-          let bullet = undefined;
-          if (el.tagName === 'LI') {
-            const parentTag = el.parentElement ? el.parentElement.tagName : '';
-            if (parentTag === 'OL') bullet = { level: 0, type: "decimal" }; // Simple numbering
-            else bullet = { level: 0 }; // Simple bullet
-          }
-
-          children.push(
-            new Paragraph({
-              children: paragraphChildren,
-              bullet: bullet,
-              spacing: { after: 200 },
-              heading: (el.tagName.startsWith('H')) ? `Heading${el.tagName.charAt(1)}` : undefined
-            })
-          );
+      const flushText = (paragraphProps = {}) => {
+        if (currentTextRuns.length > 0) {
+          docChildren.push(new Paragraph({
+            children: currentTextRuns,
+            ...paragraphProps
+          }))
+          currentTextRuns = []
         }
       }
 
-      if (children.length === 0) {
-        children.push(new Paragraph({ children: [new TextRun("No content found.")] }))
+      const processNode = async (node, style = {}) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          // Replace newlines with spaces, collapse multiple spaces
+          let text = node.textContent.replace(/\s+/g, ' ')
+          if (text.trim()) {
+            currentTextRuns.push(new TextRun({
+              text: text,
+              bold: style.bold,
+              italics: style.italics,
+              size: style.size || 24,
+            }))
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const tagName = node.tagName.toLowerCase()
+
+          // Skip non-content tags
+          if (['script', 'style', 'noscript', 'meta', 'link'].includes(tagName)) return
+
+          const isBlock = ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'br', 'figcaption', 'figure', 'article', 'section', 'tr'].includes(tagName)
+
+          // Determine styling
+          const newStyle = { ...style }
+          if (['b', 'strong', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'dt'].includes(tagName)) newStyle.bold = true
+          if (['i', 'em', 'figcaption'].includes(tagName)) newStyle.italics = true
+
+          // Heading Sizes
+          if (tagName === 'h1') newStyle.size = 32
+          else if (tagName.startsWith('h')) newStyle.size = 28
+          else if (tagName === 'figcaption') newStyle.size = 20
+
+          if (isBlock) flushText()
+
+          // Handle Images
+          if (tagName === 'img') {
+            flushText()
+
+            let src = node.getAttribute('src')
+            if (src) {
+              // Fix URL
+              if (src.startsWith('/')) {
+                const urlObj = new URL(url)
+                src = `${urlObj.origin}${src}`
+              } else if (!src.startsWith('http')) {
+                const urlObj = new URL(url)
+                src = new URL(src, urlObj.href).href
+              }
+              if (src.includes('epos.myesr.org') && src.includes('/media/')) {
+                try {
+                  const urlObj = new URL(src);
+                  urlObj.search = '';
+                  src = urlObj.toString();
+                } catch (e) { /* ignore */ }
+              }
+
+              // Ignore base64 or tiny icons if needed, but for now capture all
+              if (src) {
+                const imgBlob = await fetchImage(src)
+                if (imgBlob) {
+                  try {
+                    const { width, height } = await getImageDimensions(imgBlob)
+                    const arrayBuffer = await imgBlob.arrayBuffer()
+
+                    if (width > maxImageWidth) maxImageWidth = width
+
+                    docChildren.push(
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: arrayBuffer,
+                            transformation: { width, height },
+                          }),
+                        ],
+                        spacing: { after: 200 }
+                      })
+                    )
+                  } catch (e) {
+                    console.error("Error processing image", e)
+                  }
+                }
+              }
+            }
+            return // Don't process children of img
+          }
+
+          // Handle Line Breaks
+          if (tagName === 'br') {
+            currentTextRuns.push(new TextRun({ break: 1 }))
+          }
+
+          // Recurse
+          // Convert NodeList to Array to avoid issues during iteration if DOM changes (unlikely here but safe)
+          const children = Array.from(node.childNodes)
+          for (const child of children) {
+            await processNode(child, newStyle)
+          }
+
+          if (isBlock) {
+            // Paragraph properties for specific blocks
+            let props = { spacing: { after: 200 } }
+            if (tagName === 'li') document.hasList = true // Hint for list handling (simplified here)
+
+            // Simple bullet handling fallback
+            if (tagName === 'li') {
+              // We'd ideally need track level, but simply flushing is better than missing text.
+              // TextRun inside will be flushed.
+              // For proper lists we need 'numbering' prop on Paragraph, simplified here:
+              currentTextRuns.unshift(new TextRun({ text: "• " }))
+            }
+
+            flushText(props)
+          }
+        }
+      }
+
+      setStatus('Processing content...')
+      // Start processing from body
+      await processNode(doc.body)
+      flushText()
+
+      if (docChildren.length === 0) {
+        docChildren.push(new Paragraph({ children: [new TextRun("No content found.")] }))
       }
 
       setStatus('Generating Word document...')
+
+      const calculatedWidthTwips = Math.max(11906, (maxImageWidth * 15) + 3000)
 
       const wordDoc = new Document({
         sections: [{
           properties: {
             page: {
               size: {
-                width: 11906, // A4 width in twips
-                height: 16838, // A4 height in twips
+                width: calculatedWidthTwips,
+                height: 16838,
               },
               margin: {
-                top: 1000,
-                right: 1000,
-                bottom: 1000,
-                left: 1000,
+                top: 1000, right: 1000, bottom: 1000, left: 1000,
               }
             }
           },
-          children: children,
+          children: docChildren,
         }],
       })
 
