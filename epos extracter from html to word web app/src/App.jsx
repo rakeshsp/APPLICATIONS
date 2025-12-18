@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Document, Packer, Paragraph, TextRun, ImageRun } from 'docx'
+import { Document, Packer, Paragraph, TextRun, ImageRun, InternalHyperlink, BookmarkStart, BookmarkEnd } from 'docx'
 import { saveAs } from 'file-saver'
 import './App.css'
 
@@ -53,58 +53,151 @@ function App() {
       const doc = parser.parseFromString(html, 'text/html')
 
       const docChildren = []
-      let currentTextRuns = []
+      let currentRunDescriptors = []
       let maxImageWidth = 0
 
       const flushText = (paragraphProps = {}) => {
-        if (currentTextRuns.length > 0) {
+        if (currentRunDescriptors.length > 0) {
+
+          const fullText = currentRunDescriptors.filter(d => d.type === 'text').map(d => d.text).join('')
+          const captionMatch = fullText.match(/^(Fig(?:ure)?\.?)\s*(\d+)/i)
+          let bookmarkId = null
+
+          if (captionMatch) {
+            const num = captionMatch[2]
+            bookmarkId = `fig-${num}`
+          }
+
+          let finalChildren = []
+
+          if (bookmarkId) {
+            finalChildren.push(new BookmarkStart({ id: bookmarkId, name: bookmarkId }))
+          }
+
+          for (const desc of currentRunDescriptors) {
+            if (desc.type === 'break') {
+              finalChildren.push(new TextRun({ break: 1 }))
+            } else if (desc.type === 'image') {
+              finalChildren.push(new ImageRun({
+                data: desc.data,
+                transformation: { width: desc.width, height: desc.height }
+              }))
+            } else if (desc.type === 'text') {
+              const textContent = desc.text
+              const linkRegex = /(Fig(?:ure)?\.?\s*)(\d+)/gi
+
+              let lastIndex = 0
+              let match
+              let runParts = []
+
+              while ((match = linkRegex.exec(textContent)) !== null) {
+                const [fullMatch, prefix, num] = match
+
+                if (match.index > lastIndex) {
+                  runParts.push(new TextRun({
+                    text: textContent.slice(lastIndex, match.index),
+                    bold: desc.style.bold,
+                    italics: desc.style.italics,
+                    size: desc.style.size || 24,
+                  }))
+                }
+
+                const isSelfReference = bookmarkId && bookmarkId === `fig-${num}` && match.index === 0
+
+                if (isSelfReference) {
+                  runParts.push(new TextRun({
+                    text: fullMatch,
+                    bold: desc.style.bold,
+                    italics: desc.style.italics,
+                    size: desc.style.size || 24,
+                  }))
+                } else {
+                  runParts.push(new InternalHyperlink({
+                    children: [
+                      new TextRun({
+                        text: fullMatch,
+                        bold: desc.style.bold,
+                        italics: desc.style.italics,
+                        color: "0563C1",
+                        underline: {
+                          type: "single"
+                        },
+                        size: desc.style.size || 24,
+                      })
+                    ],
+                    anchor: `fig-${num}`
+                  }))
+                }
+
+                lastIndex = linkRegex.lastIndex
+              }
+
+              if (lastIndex < textContent.length) {
+                runParts.push(new TextRun({
+                  text: textContent.slice(lastIndex),
+                  bold: desc.style.bold,
+                  italics: desc.style.italics,
+                  size: desc.style.size || 24,
+                }))
+              }
+
+              if (runParts.length > 0) {
+                finalChildren.push(...runParts)
+              } else {
+                finalChildren.push(new TextRun({
+                  text: textContent,
+                  bold: desc.style.bold,
+                  italics: desc.style.italics,
+                  size: desc.style.size || 24,
+                }))
+              }
+            }
+          }
+
+          if (bookmarkId) {
+            finalChildren.push(new BookmarkEnd({ id: bookmarkId }))
+          }
+
           docChildren.push(new Paragraph({
-            children: currentTextRuns,
+            children: finalChildren,
             ...paragraphProps
           }))
-          currentTextRuns = []
+          currentRunDescriptors = []
         }
       }
 
       const processNode = async (node, style = {}) => {
         if (node.nodeType === Node.TEXT_NODE) {
-          // Replace newlines with spaces, collapse multiple spaces
           let text = node.textContent.replace(/\s+/g, ' ')
           if (text.trim()) {
-            currentTextRuns.push(new TextRun({
+            currentRunDescriptors.push({
+              type: 'text',
               text: text,
-              bold: style.bold,
-              italics: style.italics,
-              size: style.size || 24,
-            }))
+              style: style
+            })
           }
         } else if (node.nodeType === Node.ELEMENT_NODE) {
           const tagName = node.tagName.toLowerCase()
 
-          // Skip non-content tags
           if (['script', 'style', 'noscript', 'meta', 'link'].includes(tagName)) return
 
           const isBlock = ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'br', 'figcaption', 'figure', 'article', 'section', 'tr'].includes(tagName)
 
-          // Determine styling
           const newStyle = { ...style }
           if (['b', 'strong', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'dt'].includes(tagName)) newStyle.bold = true
           if (['i', 'em', 'figcaption'].includes(tagName)) newStyle.italics = true
 
-          // Heading Sizes
           if (tagName === 'h1') newStyle.size = 32
           else if (tagName.startsWith('h')) newStyle.size = 28
           else if (tagName === 'figcaption') newStyle.size = 20
 
           if (isBlock) flushText()
 
-          // Handle Images
           if (tagName === 'img') {
             flushText()
 
             let src = node.getAttribute('src')
             if (src) {
-              // Fix URL
               if (src.startsWith('/')) {
                 const urlObj = new URL(url)
                 src = `${urlObj.origin}${src}`
@@ -120,7 +213,6 @@ function App() {
                 } catch (e) { /* ignore */ }
               }
 
-              // Ignore base64 or tiny icons if needed, but for now capture all
               if (src) {
                 const imgBlob = await fetchImage(src)
                 if (imgBlob) {
@@ -130,58 +222,50 @@ function App() {
 
                     if (width > maxImageWidth) maxImageWidth = width
 
-                    docChildren.push(
-                      new Paragraph({
-                        children: [
-                          new ImageRun({
-                            data: arrayBuffer,
-                            transformation: { width, height },
-                          }),
-                        ],
-                        spacing: { after: 200 }
-                      })
-                    )
+                    currentRunDescriptors.push({
+                      type: 'image',
+                      data: arrayBuffer,
+                      width: width,
+                      height: height
+                    })
+                    flushText()
                   } catch (e) {
                     console.error("Error processing image", e)
                   }
                 }
               }
             }
-            return // Don't process children of img
+            return
           }
 
-          // Handle Line Breaks
           if (tagName === 'br') {
-            currentTextRuns.push(new TextRun({ break: 1 }))
+            currentRunDescriptors.push({ type: 'break' })
           }
 
-          // Recurse
-          // Convert NodeList to Array to avoid issues during iteration if DOM changes (unlikely here but safe)
           const children = Array.from(node.childNodes)
           for (const child of children) {
             await processNode(child, newStyle)
           }
 
           if (isBlock) {
-            // Paragraph properties for specific blocks
             let props = { spacing: { after: 200 } }
-            if (tagName === 'li') document.hasList = true // Hint for list handling (simplified here)
 
-            // Simple bullet handling fallback
             if (tagName === 'li') {
-              // We'd ideally need track level, but simply flushing is better than missing text.
-              // TextRun inside will be flushed.
-              // For proper lists we need 'numbering' prop on Paragraph, simplified here:
-              currentTextRuns.unshift(new TextRun({ text: "• " }))
+              // Native docx lists provide proper indentation. 
+              // We use 'level: 0' for standard indentation.
+              const parentTag = node.parentElement ? node.parentElement.tagName.toLowerCase() : 'ul'
+              if (parentTag === 'ol') {
+                props.bullet = { level: 0 }
+              } else {
+                props.bullet = { level: 0 }
+              }
             }
-
             flushText(props)
           }
         }
       }
 
       setStatus('Processing content...')
-      // Start processing from body
       await processNode(doc.body)
       flushText()
 
